@@ -40,7 +40,7 @@
 #include <media/lirc.h>
 #include <media/lirc_dev.h>
 
-#define DRIVER_NAME "cubietruck_lirc"
+#define DRIVER_NAME "sunxi_lirc_pwm"
 #define LIRC_READBUF_LEN 	256
 #define	IR_RAW_BUF_SIZE		128
 
@@ -199,7 +199,7 @@ static void set_pwm_timing(struct pwm_params *pwm_tparam)
 
 		pwm_disable();
 
-		printk(KERN_INFO DRIVER_NAME ": Setting PWM timing parameters: Carier: %luHz, Duty cycle: %i%% \n",
+		printk(KERN_INFO DRIVER_NAME ": Setting PWM timing parameters: Carrier: %luHz, Duty cycle: %i%% \n",
 							pwm_tparam->freq,
 							pwm_tparam->duty_cycle);
 
@@ -618,11 +618,11 @@ static struct platform_driver lirc_sunxi_driver = {
         },
 };
 
-static int __init cubietruck_lirc_init(void) {
+static int __init sunxi_lirc_pwm_init(void) {
 
 		int result;
 
-		printk(KERN_INFO DRIVER_NAME ": Initializing Cubietruck LIRC Driver\n");
+		printk(KERN_INFO DRIVER_NAME ": Initializing Driver\n");
 
 		result = lirc_buffer_init(&readbuf, sizeof(int), LIRC_READBUF_LEN);
 		if (result < 0)
@@ -669,7 +669,7 @@ static int __init cubietruck_lirc_init(void) {
 
 		ir_setup();
 		setup_ir_tx();
-		printk(KERN_INFO DRIVER_NAME ": Cubietruck LIRC Driver Initialized\n");
+		printk(KERN_INFO DRIVER_NAME ": Driver Initialized\n");
 
 		return 0;
 
@@ -685,8 +685,8 @@ exit_buffer_free:
 		return result;
 }
 
-static void __exit cubietruck_lirc_exit(void) {
-		printk(KERN_INFO DRIVER_NAME ": Cleaning Cubietruck LIRC Driver\n");
+static void __exit sunxi_lirc_pwm_exit(void) {
+		printk(KERN_INFO DRIVER_NAME ": Cleaning Driver\n");
 
 		del_timer(&rx_timer);
 		free_irq(IR_IRQNO, (void*) 0);
@@ -700,11 +700,11 @@ static void __exit cubietruck_lirc_exit(void) {
 
 		free_ir_tx();
 
-		printk(KERN_INFO DRIVER_NAME ": Cubietruck LIRC Driver module cleaned up\n");
+		printk(KERN_INFO DRIVER_NAME ": Driver module cleaned up\n");
 }
 
-module_init(cubietruck_lirc_init);
-module_exit(cubietruck_lirc_exit);
+module_init(sunxi_lirc_pwm_init);
+module_exit(sunxi_lirc_pwm_exit);
 
 module_param(pwm_channel, short, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(pwm_channel, "PWM Channel(0, 1) for IR TX. Default: 0");
@@ -713,5 +713,5 @@ MODULE_PARM_DESC(debug, "Enable debugging messages");
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Marek Andrzejewski <marek1and@gmail.com>");
-MODULE_DESCRIPTION("Cubietruck LIRC module with hardware CIR receiver and PWM transmitter");
+MODULE_DESCRIPTION("A1X/A20 LIRC module with hardware CIR receiver and PWM transmitter");
 MODULE_VERSION("1.0");
