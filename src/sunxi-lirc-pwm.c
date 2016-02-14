@@ -34,6 +34,7 @@
 #include <linux/timer.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
+#include <linux/preempt.h>
 #include <plat/irqs.h>
 #include <asm-generic/errno.h>
 #include <asm/uaccess.h>
@@ -255,6 +256,7 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n, loff_t *
 
         dprintk("Sending (%i) pulses \n", count);
 
+        preempt_disable();
 		for (i = 0; i < count; i++) {
 				if (i % 2)
 						pwm_disable();
@@ -263,6 +265,7 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n, loff_t *
 				safe_udelay(txbuf[i]);
 		}
 		pwm_disable();
+		preempt_enable();
 
 		dprintk("Sending (%i) pulses completed \n", count);
 
